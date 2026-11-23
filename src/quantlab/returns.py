@@ -1,3 +1,5 @@
+# To run: python quant_lab/src/quantlab/returns.py
+
 import csv
 import datetime as dt
 
@@ -22,10 +24,17 @@ def load_prices(Name):
               str(stock[0]["Name"] + " stock values."))
         return stock
 
-# def simple_returns()
+
+def simple_returns(stock):
+    opens = [row["Open"] for row in stock]
+    closes = [row["Close"] for row in stock]
+    dates = [row["Date"] for row in stock]
+    daily_returns = [[dates[i], closes[i] - opens[i]]
+                     for i in range(len(opens))]
+    total_return = sum([row[1] for row in daily_returns])
+    return daily_returns, total_return
 
 
 CMA = load_prices("CMA")
-print(CMA[:3])
 
-print(CMA[1]["Name"])
+CMA_daily, CMA_total = simple_returns(CMA)
