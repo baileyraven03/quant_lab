@@ -22,6 +22,8 @@ def load_prices(Name):
               str(stock[0]["Name"] + " stock values."))
         return stock
 
+# def simple_returns()
+
 
 CMA = load_prices("CMA")
 print(CMA[:3])
