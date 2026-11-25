@@ -35,6 +35,64 @@ def simple_returns(stock):
     return daily_returns, total_return
 
 
-CMA = load_prices("CMA")
+def weekly_returns(stock):
+    daily_returns, _ = simple_returns(stock)
 
-CMA_daily, CMA_total = simple_returns(CMA)
+    weekly_returns_by_day = {}
+    weekly_totals = {}
+    for dates, returns in daily_returns:
+        year, week, _ = dates.isocalendar()
+
+        key = (year, week)
+        if key not in weekly_returns_by_day:
+            weekly_returns_by_day[key] = [returns]
+            weekly_totals[key] = returns
+
+        else:
+            weekly_totals[key] = weekly_totals[key] + returns
+            weekly_returns_by_day[key].append(returns)
+    #  Checking Functionality
+    for key in weekly_returns_by_day:
+        if sum(weekly_returns_by_day[key]) != weekly_totals[key]:
+            print("Incorrect!")
+
+    return weekly_totals, weekly_returns_by_day
+
+
+def yearly_returns(stock):
+    weekly_totals, _ = weekly_returns(stock)
+    yearly_returns = {}
+    for (year, week), value in weekly_totals.items():
+        key = year
+        if key not in yearly_returns:
+            yearly_returns[key] = value
+        else:
+            yearly_returns[key] += value
+    return yearly_returns
+
+
+def call_all_functions(stock):
+    prices = load_prices(stock)
+    daily, total = simple_returns(prices)
+    weekly_total, daily_by_week_returns = weekly_returns(prices)
+    yearly = yearly_returns(prices)
+    stock = {
+        "prices": prices,
+        "daily": daily,
+        "total": total,
+        "weekly_totals": weekly_total,
+        "daily_by_week": daily_by_week_returns,
+        "yearly": yearly,
+    }
+    return stock
+
+
+CMA = call_all_functions("CMA")
+
+AAPL = load_prices("AAPL")
+
+AAPL_daily, AAPL_total = simple_returns(AAPL)
+AAPL_weekly_total, AAPL_daily_by_week_returns = weekly_returns(AAPL)
+AAPL_yearly = yearly_returns(AAPL)
+
+print(CMA["yearly"])
